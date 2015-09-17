@@ -11,6 +11,7 @@ type MedicationMetadata struct {
 	ID         int    `json:"medication_id"`
 	RxNormCode string `json:"rxNormCode"`
 	BrandName  string `json:"brandName"`
+	TradeName  string `json:"tradeName"`
 }
 
 func GenerateMedication(medicationID int, onset *models.FHIRDateTime, mmd []MedicationMetadata) *models.MedicationStatement {
@@ -20,7 +21,14 @@ func GenerateMedication(medicationID int, onset *models.FHIRDateTime, mmd []Medi
 		ms := &models.MedicationStatement{}
 		mmd := medicationByID(medicationID, mmd)
 		ms.EffectivePeriod = &models.Period{Start: onset}
-		ms.MedicationCodeableConcept = &models.CodeableConcept{Coding: []models.Coding{{Code: mmd.RxNormCode, System: "http://www.nlm.nih.gov/research/umls/rxnorm"}}, Text: mmd.BrandName}
+		var medName string
+		if mmd.TradeName == "N/A" {
+			medName = mmd.BrandName
+		} else {
+			medName = mmd.TradeName
+		}
+
+		ms.MedicationCodeableConcept = &models.CodeableConcept{Coding: []models.Coding{{Code: mmd.RxNormCode, System: "http://www.nlm.nih.gov/research/umls/rxnorm"}}, Text: medName}
 		return ms
 	}
 }
