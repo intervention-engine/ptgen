@@ -2,6 +2,8 @@ package ptgen
 
 import (
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/icrowley/fake"
@@ -16,11 +18,56 @@ type Context struct {
 	Hypertention string
 	Alcohol      string
 	Cholesterol  string
+	Diabetes     string
+}
+
+func GeneratePatient() []interface{} {
+	ctx := NewContext()
+	tempID := strconv.FormatInt(rand.Int63(), 10)
+	pt := GenerateDemographics()
+	pt.Id = tempID
+	md := LoadConditions()
+	mmd := LoadMedications()
+	conditions := GenerateConditions(ctx, md)
+	var m []interface{}
+	m = append(m, &pt)
+	for i := range conditions {
+		c := conditions[i]
+		c.Patient = &models.Reference{Reference: "cid:" + tempID}
+		m = append(m, &c)
+		conditionMetadata := conditionByName(c.Code.Text, md)
+		med := GenerateMedication(conditionMetadata.MedicationID, c.OnsetDateTime, mmd)
+		if med != nil {
+			med.Patient = &models.Reference{Reference: "cid:" + tempID}
+			m = append(m, med)
+		}
+	}
+
+	for i := 0; i < 3; i++ {
+		t := time.Now()
+		encounterDate := &models.FHIRDateTime{Time: t.AddDate(-i, rand.Intn(2), rand.Intn(5)), Precision: models.Date}
+		encounter := models.Encounter{}
+		encounter.Type = []models.CodeableConcept{{Coding: []models.Coding{{Code: "99213", System: "http://www.ama-assn.org/go/cpt"}}, Text: "Office Visit"}}
+		encounter.Period = &models.Period{Start: encounterDate}
+		encounter.Patient = &models.Reference{Reference: "cid:" + tempID}
+		m = append(m, &encounter)
+		obs := GenerateBP(ctx)
+		obs = append(obs, GenerateBloodSugars(ctx)...)
+		obs = append(obs, GenerateWeightAndHeight(pt)...)
+		for j := range obs {
+			o := obs[j]
+			o.EffectiveDateTime = encounterDate
+			o.Subject = &models.Reference{Reference: "cid:" + tempID}
+			m = append(m, &o)
+		}
+	}
+
+	return m
 }
 
 func GenerateDemographics() models.Patient {
 	patient := models.Patient{}
-	patient.Gender = fake.Gender()
+	patient.Gender = strings.ToLower(fake.Gender())
 	name := models.HumanName{}
 	var firstName string
 	if patient.Gender == "male" {
@@ -84,5 +131,8 @@ func NewContext() Context {
 
 	hc, _ := randutil.ChoiceString([]string{"Normal", "Pre-hypertension", "Hypertension"})
 	ctx.Hypertention = hc
+
+	dc, _ := randutil.ChoiceString([]string{"Normal", "Pre-diabetes", "Diabetes"})
+	ctx.Diabetes = dc
 	return ctx
 }

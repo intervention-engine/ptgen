@@ -8,8 +8,8 @@ import (
 
 func GenerateBP(ctx Context) []models.Observation {
 	sys, dia := models.Observation{}, models.Observation{}
-	sys.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "271649006", System: "http://snomed.info/sct"}}, Text: "Systolic Blood Pressure"}
-	dia.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "271650006", System: "http://snomed.info/sct"}}, Text: "Diastolic Blood Pressure"}
+	sys.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "8480-6", System: "http://loinc.org"}}, Text: "Systolic Blood Pressure"}
+	dia.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "8462-4", System: "http://loinc.org"}}, Text: "Diastolic Blood Pressure"}
 	switch ctx.Hypertention {
 	case "Normal":
 		sys.ValueQuantity = GenerateQuantity(100, 120)
@@ -29,9 +29,9 @@ func GenerateBP(ctx Context) []models.Observation {
 
 func GenerateCholesterol(ctx Context) []models.Observation {
 	ldl, hdl, tri := models.Observation{}, models.Observation{}, models.Observation{}
-	ldl.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "314036004", System: "http://snomed.info/sct"}}, Text: "Plasma LDL Cholesterol Measurement"}
-	hdl.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "314035000", System: "http://snomed.info/sct"}}, Text: "Plasma HDL Cholesterol Measurement"}
-	tri.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "167082000", System: "http://snomed.info/sct"}}, Text: "Plasma Triglyceride Measurement"}
+	ldl.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "13457-7", System: "http://loinc.org"}}, Text: "Plasma LDL Cholesterol Measurement"}
+	hdl.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "2085-9", System: "http://loinc.org"}}, Text: "Plasma HDL Cholesterol Measurement"}
+	tri.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "3043-7", System: "http://loinc.org"}}, Text: "Plasma Triglyceride Measurement"}
 
 	switch ctx.Cholesterol {
 	case "Optimal":
@@ -65,6 +65,8 @@ func GenerateCholesterol(ctx Context) []models.Observation {
 
 func GenerateWeightAndHeight(patient models.Patient) []models.Observation {
 	w, h := models.Observation{}, models.Observation{}
+	w.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "29463-7", System: "http://loinc.org"}}, Text: "Body Weight"}
+	h.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "8302-2", System: "http://loinc.org"}}, Text: "Body Height"}
 	if patient.Gender == "male" {
 		w.ValueQuantity = GenerateQuantity(100, 300)
 		h.ValueQuantity = GenerateQuantity(60, 80)
@@ -77,6 +79,30 @@ func GenerateWeightAndHeight(patient models.Patient) []models.Observation {
 	h.ValueQuantity.Units = "in"
 
 	return []models.Observation{w, h}
+}
+
+func GenerateBloodSugars(ctx Context) []models.Observation {
+	gluc, ha1c := models.Observation{}, models.Observation{}
+	gluc.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "1558-6", System: "http://loinc.org"}}, Text: "Fasting Glucose"}
+	ha1c.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "4548-4", System: "http://loinc.org"}}, Text: "Hemoglobin A1c"}
+
+	switch ctx.Diabetes {
+	case "Normal":
+		gluc.ValueQuantity = GenerateQuantity(75, 100)
+		ha1c.ValueQuantity = GenerateQuantity(40, 56)
+	case "Pre-diabetes":
+		gluc.ValueQuantity = GenerateQuantity(100, 125)
+		ha1c.ValueQuantity = GenerateQuantity(57, 64)
+	case "Diabetes":
+		gluc.ValueQuantity = GenerateQuantity(200, 300)
+		ha1c.ValueQuantity = GenerateQuantity(65, 80)
+	}
+	gluc.ValueQuantity.Units = "mg/dL"
+	percentageValue := *ha1c.ValueQuantity.Value / float64(10)
+	ha1c.ValueQuantity.Value = &percentageValue
+	ha1c.ValueQuantity.Units = "%"
+
+	return []models.Observation{gluc, ha1c}
 }
 
 func GenerateQuantity(min, max int) *models.Quantity {
