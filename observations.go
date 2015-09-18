@@ -63,17 +63,14 @@ func GenerateCholesterol(ctx Context) []models.Observation {
 	return []models.Observation{ldl, hdl, tri}
 }
 
-func GenerateWeightAndHeight(patient models.Patient) []models.Observation {
+func GenerateWeightAndHeight(ctx Context) []models.Observation {
 	w, h := models.Observation{}, models.Observation{}
 	w.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "29463-7", System: "http://loinc.org"}}, Text: "Body Weight"}
 	h.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: "8302-2", System: "http://loinc.org"}}, Text: "Body Height"}
-	if patient.Gender == "male" {
-		w.ValueQuantity = GenerateQuantity(100, 300)
-		h.ValueQuantity = GenerateQuantity(60, 80)
-	} else {
-		w.ValueQuantity = GenerateQuantity(80, 250)
-		h.ValueQuantity = GenerateQuantity(55, 75)
-	}
+
+	w.ValueQuantity = GenerateQuantity(ctx.Weight-10, ctx.Weight+10)
+	height := float64(ctx.Height)
+	h.ValueQuantity = &models.Quantity{Value: &height}
 
 	w.ValueQuantity.Units = "lbs"
 	h.ValueQuantity.Units = "in"

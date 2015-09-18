@@ -1,6 +1,7 @@
 package ptgen
 
 import (
+	"math"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -19,12 +20,15 @@ type Context struct {
 	Alcohol      string
 	Cholesterol  string
 	Diabetes     string
+	Height       int
+	Weight       int
 }
 
 func GeneratePatient() []interface{} {
 	ctx := NewContext()
 	tempID := strconv.FormatInt(rand.Int63(), 10)
 	pt := GenerateDemographics()
+	ctx.Height, ctx.Weight = initialHeightAndWeight(pt.Gender)
 	pt.Id = tempID
 	md := LoadConditions()
 	mmd := LoadMedications()
@@ -53,7 +57,7 @@ func GeneratePatient() []interface{} {
 		m = append(m, &encounter)
 		obs := GenerateBP(ctx)
 		obs = append(obs, GenerateBloodSugars(ctx)...)
-		obs = append(obs, GenerateWeightAndHeight(pt)...)
+		obs = append(obs, GenerateWeightAndHeight(ctx)...)
 		for j := range obs {
 			o := obs[j]
 			o.EffectiveDateTime = encounterDate
@@ -135,4 +139,17 @@ func NewContext() Context {
 	dc, _ := randutil.ChoiceString([]string{"Normal", "Pre-diabetes", "Diabetes"})
 	ctx.Diabetes = dc
 	return ctx
+}
+
+func initialHeightAndWeight(gender string) (h, w int) {
+	if gender == "male" {
+		h = 20 + rand.Intn(60)
+	} else {
+		h = 20 + rand.Intn(55)
+	}
+	minBMI := float64(18)
+	englishBMIConstant := float64(703)
+	minWeight := (minBMI / englishBMIConstant) * math.Pow(float64(h), float64(2))
+	w = int(minWeight) + rand.Intn(200)
+	return
 }
