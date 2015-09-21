@@ -99,6 +99,20 @@ func generateCondition(name string, yearOffset int, md []ConditionMetadata) mode
 	cmd := conditionByName(name, md)
 	c.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: cmd.ICD9, System: "http://hl7.org/fhir/sid/icd-9"}}, Text: cmd.Display}
 	c.OnsetDateTime = &models.FHIRDateTime{Time: randomOnset(yearOffset), Precision: models.Date}
+	recoveryDiceRoll := rand.Intn(100)
+	if recoveryDiceRoll <= cmd.AbatementChance {
+		switch cmd.RecoveryEstimate {
+		case "week":
+			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 0, 7), Precision: models.Date}
+		case "threeMonths":
+			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 3, 0), Precision: models.Date}
+		case "sixMonths":
+			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 6, 0), Precision: models.Date}
+		case "threeYears":
+			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(3, 0, 0), Precision: models.Date}
+		}
+	}
+
 	return c
 }
 
