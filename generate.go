@@ -143,9 +143,9 @@ func NewContext() Context {
 
 func initialHeightAndWeight(gender string) (h, w int) {
 	if gender == "male" {
-		h = 20 + rand.Intn(60)
+		h = 60 + rand.Intn(20)
 	} else {
-		h = 20 + rand.Intn(55)
+		h = 55 + rand.Intn(20)
 	}
 	minBMI := float64(18)
 	englishBMIConstant := float64(703)
