@@ -103,13 +103,13 @@ func generateCondition(name string, yearOffset int, md []ConditionMetadata) mode
 	if recoveryDiceRoll <= cmd.AbatementChance {
 		switch cmd.RecoveryEstimate {
 		case "week":
-			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 0, 7), Precision: models.Date}
+			c.AbatementDateTime = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 0, 7), Precision: models.Timestamp}
 		case "threeMonths":
-			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 3, 0), Precision: models.Date}
+			c.AbatementDateTime = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 3, 0), Precision: models.Timestamp}
 		case "sixMonths":
-			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 6, 0), Precision: models.Date}
+			c.AbatementDateTime = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(0, 6, 0), Precision: models.Timestamp}
 		case "threeYears":
-			c.AbatementDate = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(3, 0, 0), Precision: models.Date}
+			c.AbatementDateTime = &models.FHIRDateTime{Time: c.OnsetDateTime.Time.AddDate(3, 0, 0), Precision: models.Timestamp}
 		}
 	}
 
