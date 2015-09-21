@@ -40,7 +40,7 @@ func GeneratePatient() []interface{} {
 		c.Patient = &models.Reference{Reference: "cid:" + tempID}
 		m = append(m, &c)
 		conditionMetadata := conditionByName(c.Code.Text, md)
-		med := GenerateMedication(conditionMetadata.MedicationID, c.OnsetDateTime, mmd)
+		med := GenerateMedication(conditionMetadata.MedicationID, c.OnsetDateTime, c.AbatementDate, mmd)
 		if med != nil {
 			med.Patient = &models.Reference{Reference: "cid:" + tempID}
 			m = append(m, med)

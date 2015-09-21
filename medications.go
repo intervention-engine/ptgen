@@ -14,13 +14,16 @@ type MedicationMetadata struct {
 	TradeName  string `json:"tradeName"`
 }
 
-func GenerateMedication(medicationID int, onset *models.FHIRDateTime, mmd []MedicationMetadata) *models.MedicationStatement {
+func GenerateMedication(medicationID int, onset *models.FHIRDateTime, abatement *models.FHIRDateTime, mmd []MedicationMetadata) *models.MedicationStatement {
 	if medicationID == 0 {
 		return nil
 	} else {
 		ms := &models.MedicationStatement{}
 		mmd := medicationByID(medicationID, mmd)
 		ms.EffectivePeriod = &models.Period{Start: onset}
+		if abatement != nil {
+			ms.EffectivePeriod.End = abatement
+		}
 		var medName string
 		if mmd.TradeName == "N/A" {
 			medName = mmd.BrandName
