@@ -21,8 +21,8 @@ func GenerateBP(ctx Context) []models.Observation {
 		sys.ValueQuantity = GenerateQuantity(140, 180)
 		dia.ValueQuantity = GenerateQuantity(90, 120)
 	}
-	sys.ValueQuantity.Units = "mmHg"
-	dia.ValueQuantity.Units = "mmHg"
+	sys.ValueQuantity.Unit = "mmHg"
+	dia.ValueQuantity.Unit = "mmHg"
 
 	return []models.Observation{sys, dia}
 }
@@ -56,9 +56,9 @@ func GenerateCholesterol(ctx Context) []models.Observation {
 		tri.ValueQuantity = GenerateQuantity(300, 400)
 	}
 
-	ldl.ValueQuantity.Units = "mg/dL"
-	hdl.ValueQuantity.Units = "mg/dL"
-	tri.ValueQuantity.Units = "mg/dL"
+	ldl.ValueQuantity.Unit = "mg/dL"
+	hdl.ValueQuantity.Unit = "mg/dL"
+	tri.ValueQuantity.Unit = "mg/dL"
 
 	return []models.Observation{ldl, hdl, tri}
 }
@@ -72,8 +72,8 @@ func GenerateWeightAndHeight(ctx Context) []models.Observation {
 	height := float64(ctx.Height)
 	h.ValueQuantity = &models.Quantity{Value: &height}
 
-	w.ValueQuantity.Units = "lbs"
-	h.ValueQuantity.Units = "in"
+	w.ValueQuantity.Unit = "lbs"
+	h.ValueQuantity.Unit = "in"
 
 	return []models.Observation{w, h}
 }
@@ -94,10 +94,10 @@ func GenerateBloodSugars(ctx Context) []models.Observation {
 		gluc.ValueQuantity = GenerateQuantity(200, 300)
 		ha1c.ValueQuantity = GenerateQuantity(65, 80)
 	}
-	gluc.ValueQuantity.Units = "mg/dL"
+	gluc.ValueQuantity.Unit = "mg/dL"
 	percentageValue := *ha1c.ValueQuantity.Value / float64(10)
 	ha1c.ValueQuantity.Value = &percentageValue
-	ha1c.ValueQuantity.Units = "%"
+	ha1c.ValueQuantity.Unit = "%"
 
 	return []models.Observation{gluc, ha1c}
 }
