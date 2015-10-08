@@ -79,6 +79,13 @@ func GenerateConditions(ctx Context, md []ConditionMetadata) []models.Condition 
 		}
 	}
 
+	afibChance := rand.Intn(100)
+	// 3% Chance of AFib in the general population according to Chris [citation needed]
+	if afibChance <= 3 {
+		afib := generateCondition("Atrial Fibrillation", 3, md)
+		conditions = append(conditions, afib)
+	}
+
 	otherConditions := rand.Intn(3)
 	previouslySelected := &intsets.Sparse{}
 	for index := 0; index < otherConditions; index++ {
