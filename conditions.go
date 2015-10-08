@@ -80,7 +80,7 @@ func GenerateConditions(ctx Context, md []ConditionMetadata) []models.Condition 
 	}
 	// per http://www.cdc.gov/dhdsp/data_statistics/fact_sheets/fs_atrial_fibrillation.htm
 	var afibChance int
-	if time.Now().Sub(ctx.BirthDate) > (65 * 365 * 24 * time.Hour) {
+	if time.Now().AddDate(-65, 0, 0).After(ctx.BirthDate) {
 		afibChance = 9
 	} else {
 		afibChance = 2
