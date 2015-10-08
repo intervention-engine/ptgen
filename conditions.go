@@ -78,6 +78,19 @@ func GenerateConditions(ctx Context, md []ConditionMetadata) []models.Condition 
 			conditions = append(conditions, lc)
 		}
 	}
+	// per http://www.cdc.gov/dhdsp/data_statistics/fact_sheets/fs_atrial_fibrillation.htm
+	var afibChance int
+	if time.Now().AddDate(-65, 0, 0).After(ctx.BirthDate) {
+		afibChance = 9
+	} else {
+		afibChance = 2
+	}
+
+	afibDiceRoll := rand.Intn(100)
+	if afibDiceRoll <= afibChance {
+		afib := generateCondition("Atrial Fibrillation", 3, md)
+		conditions = append(conditions, afib)
+	}
 
 	otherConditions := rand.Intn(3)
 	previouslySelected := &intsets.Sparse{}

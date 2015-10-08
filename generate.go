@@ -22,6 +22,7 @@ type Context struct {
 	Diabetes     string
 	Height       int
 	Weight       int
+	BirthDate    time.Time
 }
 
 func GeneratePatient() []interface{} {
@@ -29,6 +30,7 @@ func GeneratePatient() []interface{} {
 	tempID := strconv.FormatInt(rand.Int63(), 10)
 	pt := GenerateDemographics()
 	ctx.Height, ctx.Weight = initialHeightAndWeight(pt.Gender)
+	ctx.BirthDate = pt.BirthDate.Time
 	pt.Id = tempID
 	md := LoadConditions()
 	mmd := LoadMedications()
