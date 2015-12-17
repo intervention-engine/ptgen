@@ -21,4 +21,5 @@ func (m *MedicationSuite) TestGenerateMedication(c *C) {
 	c.Assert(med.MedicationCodeableConcept.Text, Equals, "Lisinopril 5mg Oral Tablet")
 	c.Assert(med.EffectivePeriod.Start.Time, Equals, t)
 	c.Assert(med.EffectivePeriod.End.Time, Equals, t.AddDate(0, 3, 0))
+	c.Assert(med.Status, Equals, "completed")
 }

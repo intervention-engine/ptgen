@@ -108,7 +108,7 @@ func GenerateConditions(ctx Context, md []ConditionMetadata) []models.Condition 
 }
 
 func generateCondition(name string, yearOffset int, md []ConditionMetadata) models.Condition {
-	c := models.Condition{}
+	c := models.Condition{VerificationStatus: "confirmed"}
 	cmd := conditionByName(name, md)
 	c.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: cmd.ICD9, System: "http://hl7.org/fhir/sid/icd-9"}}, Text: cmd.Display}
 	c.OnsetDateTime = &models.FHIRDateTime{Time: randomOnset(yearOffset), Precision: models.Date}
