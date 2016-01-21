@@ -1,0 +1,6 @@
+sudo: false
+language: go
+
+branches:
+  only:
+    - master
