@@ -48,14 +48,14 @@ func GenerateConditions(ctx Context, md []ConditionMetadata) []models.Condition 
 		conditions = append(conditions, ht)
 		complication := rand.Intn(5)
 		if complication == 1 {
-			chf := models.Condition{}
+			chf := models.Condition{VerificationStatus: "confirmed"}
 			chfmd := conditionByName("Congestive Heart Failure", md)
 			chf.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: chfmd.ICD9, System: "http://hl7.org/fhir/sid/icd-9"}}, Text: chfmd.Display}
 			chf.OnsetDateTime = &models.FHIRDateTime{Time: ht.OnsetDateTime.Time.AddDate(rand.Intn(2), rand.Intn(10), rand.Intn(28)), Precision: models.Date}
 			conditions = append(conditions, chf)
 		}
 		if complication == 2 {
-			phd := models.Condition{}
+			phd := models.Condition{VerificationStatus: "confirmed"}
 			phdmd := conditionByName("Pulmonary Heart Disease", md)
 			phd.Code = &models.CodeableConcept{Coding: []models.Coding{{Code: phdmd.ICD9, System: "http://hl7.org/fhir/sid/icd-9"}}, Text: phdmd.Display}
 			phd.OnsetDateTime = &models.FHIRDateTime{Time: ht.OnsetDateTime.Time.AddDate(rand.Intn(2), rand.Intn(10), rand.Intn(28)), Precision: models.Date}
