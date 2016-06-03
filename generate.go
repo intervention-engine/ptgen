@@ -28,11 +28,10 @@ type Context struct {
 
 func GeneratePatient() []interface{} {
 	ctx := NewContext()
-	tempID := strconv.FormatInt(rand.Int63(), 10)
 	pt := GenerateDemographics()
 	ctx.Height, ctx.Weight = initialHeightAndWeight(pt.Gender)
 	ctx.BirthDate = pt.BirthDate.Time
-	pt.Id = tempID
+	pt.Id = strconv.FormatInt(rand.Int63(), 10)
 	md := LoadConditions()
 	mmd := LoadMedications()
 	conditions := GenerateConditions(ctx, md)
@@ -40,12 +39,12 @@ func GeneratePatient() []interface{} {
 	m = append(m, &pt)
 	for i := range conditions {
 		c := conditions[i]
-		c.Patient = &models.Reference{Reference: "cid:" + tempID}
+		c.Patient = &models.Reference{Reference: "cid:" + pt.Id}
 		m = append(m, &c)
 		conditionMetadata := conditionByName(c.Code.Text, md)
 		med := GenerateMedication(conditionMetadata.MedicationID, c.OnsetDateTime, c.AbatementDateTime, mmd)
 		if med != nil {
-			med.Patient = &models.Reference{Reference: "cid:" + tempID}
+			med.Patient = &models.Reference{Reference: "cid:" + pt.Id}
 			m = append(m, med)
 		}
 	}
@@ -54,9 +53,10 @@ func GeneratePatient() []interface{} {
 		t := time.Now()
 		encounterDate := &models.FHIRDateTime{Time: t.AddDate(-i, rand.Intn(2), rand.Intn(5)), Precision: models.Date}
 		encounter := models.Encounter{}
+		encounter.Id = strconv.FormatInt(rand.Int63(), 10)
 		encounter.Type = []models.CodeableConcept{{Coding: []models.Coding{{Code: "99213", System: "http://www.ama-assn.org/go/cpt"}}, Text: "Office Visit"}}
 		encounter.Period = &models.Period{Start: encounterDate}
-		encounter.Patient = &models.Reference{Reference: "cid:" + tempID}
+		encounter.Patient = &models.Reference{Reference: "cid:" + pt.Id}
 		m = append(m, &encounter)
 		obs := GenerateBP(ctx)
 		obs = append(obs, GenerateBloodSugars(ctx)...)
@@ -64,7 +64,8 @@ func GeneratePatient() []interface{} {
 		for j := range obs {
 			o := obs[j]
 			o.EffectiveDateTime = encounterDate
-			o.Subject = &models.Reference{Reference: "cid:" + tempID}
+			o.Subject = &models.Reference{Reference: "cid:" + pt.Id}
+			o.Encounter = &models.Reference{Reference: "cid:" + encounter.Id}
 			m = append(m, &o)
 		}
 	}
