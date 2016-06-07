@@ -1,0 +1,145 @@
+
+{{define "DF"}}{{if . -}}
+    {{if eq .Precision "date" -}}
+      {{.Time.Format "2006-01-02" -}}
+    {{else -}}
+      {{.Time.Format "2006-01-02T15:04:05Z07:00" -}}
+    {{end -}}
+{{end}}{{end -}}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Generated Patients ({{len .PatientInfos}})</title>
+<style>
+    h1 {
+        text-align: center
+    }
+    h2, h3 {
+        margin-left: auto;
+        margin-right: auto;
+        width:80%
+    }
+    .report {
+        width:80%;
+        margin-left: auto;
+        margin-right: auto;
+        border:1px solid #C0C0C0;
+        border-collapse:collapse;
+        padding:5px;
+    }
+    .report th {
+        border:1px solid #C0C0C0;
+        padding:5px;
+        background:#F0F0F0;
+        text-align: left
+    }
+    .report td {
+        border:1px solid #C0C0C0;
+        padding:5px;
+        vertical-align:top
+    }
+    .report th.date {
+        width:15ch
+    }
+</style>
+</head>
+<body>
+<h1>Generated Patients ({{len .PatientInfos}})</h1>
+{{range .PatientInfos -}}
+{{$ptInfo := . -}}
+{{$name := (index .Patient.Name 0) -}}
+{{$address := (index .Patient.Address 0) -}}
+<p/>
+<hr/>
+<h2>{{index $name.Given 0}} {{(index $name.Family 0)}}</h2>
+<h3>Demographics</h3>
+<table class="report">
+    <thead>
+    <tr>
+        <th>Gender</th>
+        <th class="date">Birthdate</th>
+        <th>Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{.Patient.Gender}}</td>
+        <td>{{template "DF" .Patient.BirthDate}}</td>
+        <td>{{index $address.Line 0}}, {{$address.City}}, {{$address.State}} {{$address.PostalCode}}</td>
+    </tr>
+</table>
+{{if .Conditions -}}
+<h3>Conditions</h3>
+<table class="report">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th class="date">Start</th>
+        <th class="date">End</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Conditions -}}
+    <tr>
+        <td>{{.Code.Text}}</td>
+        <td>{{template "DF" .OnsetDateTime}}</td>
+        <td>{{template "DF" .AbatementDateTime}}</td>
+    </tr>
+    {{end -}}
+    </tbody>
+</table>
+{{end -}}
+{{if .Medications -}}
+<h3>Medications</h3>
+<table class="report">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th class="date">Start</th>
+        <th class="date">End</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Medications -}}
+    <tr>
+        <td>{{.MedicationCodeableConcept.Text}}</td>
+        <td>{{template "DF" .EffectivePeriod.Start}}</td>
+        <td>{{template "DF" .EffectivePeriod.End}}</td>
+    </tr>
+    {{end -}}
+    </tbody>
+</table>
+{{end -}}
+{{if .Encounters -}}
+<h3>Encounters</h3>
+<table class="report">
+    <thead>
+    <tr>
+        <th>Type</th>
+        <th class="date">Date</th>
+        <th>Observation</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Encounters -}}
+    {{$enc := . -}}
+    {{$encObs := (index $ptInfo.EncObservations .Id) -}}
+    {{range $i, $_ := $encObs -}}
+    <tr>
+        {{if eq $i 0 -}}
+        <td rowspan="{{len $encObs}}">{{(index $enc.Type 0).Text}}</td>
+        <td rowspan="{{len $encObs}}">{{template "DF" $enc.Period.Start}}</td>
+        {{end -}}
+        <td>{{.Code.Text}}</td>
+        <td>{{.ValueQuantity.Value}} {{.ValueQuantity.Unit}}</td>
+    </tr>
+    {{end -}}
+    {{end -}}
+    </tbody>
+</table>
+{{end -}}
+{{end -}}
+</body>
+</html>

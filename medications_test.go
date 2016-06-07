@@ -15,7 +15,7 @@ var _ = Suite(&MedicationSuite{})
 func (m *MedicationSuite) TestGenerateMedication(c *C) {
 	mmd := LoadMedications()
 	t := time.Now()
-	start := models.FHIRDateTime{Time: t, Precision: models.Timestamp}
+	start := models.FHIRDateTime{Time: t, Precision: models.Date}
 	end := models.FHIRDateTime{Time: t.AddDate(0, 3, 0), Precision: models.Date}
 	med := GenerateMedication(3, &start, &end, mmd)
 	c.Assert(med.MedicationCodeableConcept.Text, Equals, "Lisinopril 5mg Oral Tablet")
