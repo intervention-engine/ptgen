@@ -1,7 +1,6 @@
 package ptgen
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
@@ -84,9 +83,7 @@ func GenerateDemographics() models.Patient {
 		firstName = fake.FemaleFirstName()
 	}
 	name.Given = []string{firstName}
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	ln := fmt.Sprintf("%s%04d", fake.LastName(), r.Intn(10000))
-	name.Family = []string{ln}
+	name.Family = []string{fake.LastName() + fake.DigitsN(4)}
 	patient.Name = []models.HumanName{name}
 	patient.BirthDate = &models.FHIRDateTime{Time: RandomBirthDate(), Precision: models.Date}
 	patient.Address = []models.Address{GenerateAddress()}
@@ -106,7 +103,7 @@ func RandomBirthDate() time.Time {
 
 func GenerateAddress() models.Address {
 	address := models.Address{}
-	address.Line = []string{fake.Street()}
+	address.Line = []string{fake.Digits() + " " + fake.Street()}
 	address.City = fake.City()
 	address.State = fake.StateAbbrev()
 	address.PostalCode = fake.Zip()
