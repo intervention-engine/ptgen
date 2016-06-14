@@ -106,7 +106,7 @@ func GenerateAddress() models.Address {
 	address.Line = []string{fake.Digits() + " " + fake.Street()}
 	address.City = fake.City()
 	address.State = fake.StateAbbrev()
-	address.PostalCode = fake.Zip()
+	address.PostalCode = fake.DigitsN(5) // NOTE: fake.Zip() gives us 7 digits
 	return address
 }
 
